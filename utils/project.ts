@@ -21,22 +21,22 @@ const projectJSON = {
     manifest: {
       theme_color: "#822CEC",
       background_color: "#822CEC"
-    },
-    root: {
-      name: "App",
-      stateDefinitions: {
-        route: {
-          type: "string",
-          defaultValue: "home",
-          values: [
-            {
-              value: "home",
-              pageOptions: {
-                navLink: "/"
-              }
+    }
+  },
+  root: {
+    name: "App",
+    stateDefinitions: {
+      route: {
+        type: "string",
+        defaultValue: "home",
+        values: [
+          {
+            value: "home",
+            pageOptions: {
+              navLink: "/"
             }
-          ]
-        }
+          }
+        ]
       }
     }
   }

@@ -8,7 +8,7 @@ export const addRouteToUIDL = (fileName: string, uidl) => {
       navLink: `/${fileName}`
     }
   };
-  uidl.globals.root.stateDefinitions.route.values.push(newRoute);
+  uidl.root.stateDefinitions.route.values.push(newRoute);
   return uidl;
 };
 

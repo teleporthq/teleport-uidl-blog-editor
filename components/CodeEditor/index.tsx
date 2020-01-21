@@ -1,5 +1,12 @@
 import React from "react";
 import AceEditor from "react-ace";
+import { packProject } from "@teleporthq/teleport-code-generator";
+import {
+  ProjectType,
+  PublisherType,
+  PackerOptions
+} from "@teleporthq/teleport-types";
+
 import { exportJson } from "../../utils/helpers";
 
 import "brace/mode/markdown";
@@ -9,6 +16,8 @@ import "brace/ext/searchbox";
 const CodeEditor = ({ activeFile, handleOnChange, uidl }) => {
   const { id, name, content } = activeFile;
   const el = document.getElementById("download_uidl");
+
+  const handlePackProject = async () => {};
 
   return (
     <>
@@ -21,7 +30,9 @@ const CodeEditor = ({ activeFile, handleOnChange, uidl }) => {
         >
           Download UIDL
         </a>
-        <button className="secondary_button">Download Project</button>
+        <button className="secondary_button" onClick={handlePackProject}>
+          Download Project
+        </button>
       </section>
       <AceEditor
         mode="markdown"
