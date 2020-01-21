@@ -26,7 +26,7 @@ const BlogEditor = () => {
 
   const getActiveFile = () => (files ? files[activeFile] : {});
 
-  const handleEditorValueChange = (newValue, name, fileId) => {
+  const handleEditorValueChange = (newValue: string, name: string, fileId) => {
     const newFiles = {
       ...files,
       [fileId]: {
@@ -35,8 +35,8 @@ const BlogEditor = () => {
       }
     };
     setFiles(newFiles);
-    const newUIDL = generateUIDLNodes(newValue, projectUIDL);
-    updateProjectUIDL(newUIDL);
+    const uidl = generateUIDLNodes(newValue, name, projectUIDL);
+    updateProjectUIDL(uidl);
   };
 
   return (
