@@ -45,7 +45,6 @@ export const generateUIDLNodes = (content: string, name: string, uidl) => {
       ...newComponent
     }
   };
-  console.log(newUIDl);
   return newUIDl;
 };
 

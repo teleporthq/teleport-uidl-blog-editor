@@ -95,30 +95,6 @@ const FileSystem = ({
           padding: 5px 15px;
         }
 
-        .secondary_button {
-          cursor: pointer;
-          border: 1px solid #fff;
-          line-height: 1.5;
-          width: 100%;
-          margin: 10px 0px;
-          font-size: 14px;
-          color: #fff;
-          background-color: #2f3031;
-          border-radius: 4px;
-        }
-
-        .primary_button {
-          cursor: pointer;
-          border: 1px solid #2f3031;
-          line-height: 1.5;
-          width: auto;
-          padding: 5px 15px;
-          margin: 10px 0px;
-          font-size: 14px;
-          color: #fff;
-          background-color: #2f3031;
-        }
-
         .file_icon {
           font-size: 14px;
           text-align: left;
