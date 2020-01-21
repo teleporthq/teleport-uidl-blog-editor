@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import FileSystem from "../components/FileSystem";
 import projectTempalte from "../utils/project";
+import { generateUIDLNodes } from "../utils/uidl-utils";
 
 const CodeEditor = dynamic(import("../components/CodeEditor"), { ssr: false });
 
@@ -16,7 +17,7 @@ const BlogEditor = () => {
       [id]: {
         id: id,
         name: "Home",
-        content: "Testing markdown descriptio"
+        content: ""
       }
     };
     setFiles(files);
@@ -34,6 +35,8 @@ const BlogEditor = () => {
       }
     };
     setFiles(newFiles);
+    const newUIDL = generateUIDLNodes(newValue, projectUIDL);
+    updateProjectUIDL(newUIDL);
   };
 
   return (
@@ -44,6 +47,8 @@ const BlogEditor = () => {
           activeFile={getActiveFile()}
           setActive={setActiveFile}
           setFiles={setFiles}
+          updateUIDL={updateProjectUIDL}
+          uidl={projectUIDL}
         />
         <section>
           <CodeEditor

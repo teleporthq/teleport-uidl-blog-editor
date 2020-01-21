@@ -30,7 +30,10 @@ const projectJSON = {
           defaultValue: "home",
           values: [
             {
-              value: "home"
+              value: "home",
+              pageOptions: {
+                navLink: "/"
+              }
             }
           ]
         }

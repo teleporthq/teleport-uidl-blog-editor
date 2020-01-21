@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
+import { addRouteToUIDL } from "../../utils/uidl-utils";
 
 const customStyle: ReactModal.Styles = {
   overlay: {
@@ -18,7 +19,14 @@ const customStyle: ReactModal.Styles = {
   }
 };
 
-const FileSystem = ({ files, activeFile, setActive, setFiles }) => {
+const FileSystem = ({
+  files,
+  activeFile,
+  setActive,
+  setFiles,
+  updateUIDL,
+  uidl
+}) => {
   const [isModalOpen, setModalStatus] = useState(false);
   const [fileName, setFileName] = useState("");
 
@@ -34,6 +42,7 @@ const FileSystem = ({ files, activeFile, setActive, setFiles }) => {
     };
     setFiles(newFiles);
     setModalStatus(false);
+    updateUIDL(addRouteToUIDL(fileName, uidl));
   };
 
   return (
