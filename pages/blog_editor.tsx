@@ -18,7 +18,7 @@ const BlogEditor = () => {
     const files = {
       [id]: {
         id: id,
-        name: "Home",
+        name: "home",
         content: ""
       }
     };

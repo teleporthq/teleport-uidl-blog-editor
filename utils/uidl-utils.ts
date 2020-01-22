@@ -10,7 +10,7 @@ export const addRouteToUIDL = (fileName: string, uidl) => {
     }
   };
   uidl.root.stateDefinitions.route.values.push(newRoute);
-  uidl.root.node.content.children.push(generateRouteNode(fileName));
+  // uidl.root.node.content.children.push(generateRouteNode(fileName));
   return uidl;
 };
 
@@ -19,18 +19,11 @@ const parser = (content: string) =>
     .use(markdownParser)
     .parse(content);
 
-const generateRouteNode = (name: string) => {
+const generateRouteNode = (name: string, uidlNodes) => {
   return {
     type: "conditional",
     content: {
-      node: {
-        type: "element",
-        content: {
-          elementType: "container",
-          name: `${name}`,
-          children: []
-        }
-      },
+      node: uidlNodes,
       value: `${name}`,
       reference: {
         type: "dynamic",
@@ -43,14 +36,25 @@ const generateRouteNode = (name: string) => {
   };
 };
 
+const filterPages = (name: string, uidl) => {
+  const pages = uidl.root.node.content.children;
+  return pages.filter(page => {
+    return page.content.value !== name;
+  });
+};
+
 export const generateUIDLNodes = (content: string, name: string, uidl) => {
   const tree = parser(content);
+
+  const pages = filterPages(name, uidl);
+
   // TODO - Generate UIDL nodes from the parsed tree
   const generatedUIDL = generateUIDL(tree, generateElementNode("container"));
-  console.log(JSON.stringify(generatedUIDL, null, 2));
+  // console.log(JSON.stringify(generatedUIDL, null, 2));
+  const currentPage = generateRouteNode(name, generatedUIDL);
 
-  // TODO - Append these generated nodes to the router node by developing the page node
-
+  uidl.root.node.content.children.push(currentPage, { ...pages });
+  console.log(JSON.stringify(uidl, null, 2));
   return uidl;
 };
 
@@ -67,7 +71,12 @@ const generateUIDL = (tree, parentNode) => {
         return parentNode;
       }
       case "heading": {
-        return;
+        const headingNode = generateHeadingNode(`h${treeNode.depth}`);
+        if (treeNode.children) {
+          generateUIDL(treeNode, headingNode);
+        }
+        parentNode.content.children.push(headingNode);
+        return parentNode;
       }
       case "link": {
         const anchorNode = generateAnchorNode(treeNode.url);
@@ -82,12 +91,33 @@ const generateUIDL = (tree, parentNode) => {
         parentNode.content.children.push(textNode);
         return parentNode;
       }
-      default:
-        return;
+      case "code": {
+        const codeBlockNode = generateCustomtNodeWithContent(treeNode.type, "");
+        parentNode.content.children.push(codeBlockNode);
+        return parentNode;
+      }
+      default: {
+        const defaultNode = generateElementNode(
+          htmlTagNameMapper(treeNode.type)
+        );
+        if (treeNode.children) {
+          generateUIDL(treeNode, defaultNode);
+        }
+        parentNode.content.children.push(defaultNode);
+        return parentNode;
+      }
     }
   });
 
   return parentNode;
+};
+
+const htmlTagNameMapper = (tagType: string) => {
+  const elements = {
+    heading: "h2",
+    emphasis: "em"
+  };
+  return elements[tagType] ? elements[tagType] : tagType;
 };
 
 const generateElementNode = (tagName: string) => {
@@ -116,7 +146,17 @@ const generateAnchorNode = (target: string) => {
   };
 };
 
-const generateTextNode = (content: string) => {
+const generateHeadingNode = tagName => {
+  return {
+    type: "element",
+    content: {
+      elementType: `${tagName}`,
+      children: []
+    }
+  };
+};
+
+const generateCustomtNodeWithContent = (tagName: string, content: string) => {
   return {
     type: "element",
     content: {

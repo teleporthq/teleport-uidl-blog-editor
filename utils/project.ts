@@ -47,7 +47,8 @@ const projectJSON = {
         children: []
       }
     }
-  }
+  },
+  components: {}
 };
 
 export default projectJSON;
