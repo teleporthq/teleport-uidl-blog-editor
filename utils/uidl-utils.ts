@@ -45,72 +45,95 @@ const generateRouteNode = (name: string) => {
 
 export const generateUIDLNodes = (content: string, name: string, uidl) => {
   const tree = parser(content);
-  let uidlNode = {};
-  const newComponent = {
-    [name]: {
-      name: name,
-      node: {
-        type: "element",
-        content: {
-          elementType: "container",
-          children: []
-        }
-      }
-    }
-  };
+  // TODO - Generate UIDL nodes from the parsed tree
+  const generatedUIDL = generateUIDL(tree, generateElementNode("container"));
+  console.log(JSON.stringify(generatedUIDL, null, 2));
 
-  generateElementNodes(tree);
+  // TODO - Append these generated nodes to the router node by developing the page node
 
-  const newUIDl = {
-    ...uidl,
-    components: {
-      ...uidl.components,
-      ...newComponent
-    }
-  };
-  return newUIDl;
+  return uidl;
 };
 
-const generateElementNodes = tree => {
+const generateUIDL = (tree, parentNode) => {
   tree.children.forEach(treeNode => {
     switch (treeNode.type) {
       case "paragraph": {
+        // Pushing static node into the parent node
+        const staticNode = generateElementNode("textblock");
         if (treeNode.children) {
-          generateElementNodes(treeNode);
+          generateUIDL(treeNode, staticNode);
         }
-        console.log(treeNode, "paragrph");
-        break;
+        parentNode.content.children.push(staticNode);
+        return parentNode;
       }
       case "heading": {
-        console.log(treeNode, "heading");
-        break;
+        return;
       }
       case "link": {
-        console.log(treeNode, "link");
-        break;
+        const anchorNode = generateAnchorNode(treeNode.url);
+        parentNode.content.children.push(anchorNode);
+        if (treeNode.children) {
+          generateUIDL(treeNode, anchorNode);
+        }
+        return parentNode;
       }
       case "text": {
-        console.log(treeNode, "simple text node");
-        break;
+        const textNode = generateStaticTextNode(treeNode.value);
+        parentNode.content.children.push(textNode);
+        return parentNode;
       }
       default:
-        console.log(treeNode, "un-recognized node");
-        break;
+        return;
     }
   });
+
+  return parentNode;
 };
 
-const generateStaticNode = (node, content: string, tagName: string) => {
-  const staticNode = {
+const generateElementNode = (tagName: string) => {
+  return {
     type: "element",
     content: {
       elementType: tagName,
+      children: []
+    }
+  };
+};
+
+const generateAnchorNode = (target: string) => {
+  return {
+    type: "element",
+    content: {
+      elementType: "link",
+      attrs: {
+        url: {
+          type: "static",
+          content: `${target}`
+        }
+      },
+      children: []
+    }
+  };
+};
+
+const generateTextNode = (content: string) => {
+  return {
+    type: "element",
+    content: {
+      elementType: "text",
       children: [
         {
           type: "static",
-          content
+          content: `${content}`
         }
       ]
     }
+  };
+};
+
+const generateStaticTextNode = (content: string) => {
+  return {
+    type: "static",
+    content: `${content}`
   };
 };

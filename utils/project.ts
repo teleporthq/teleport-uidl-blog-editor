@@ -44,29 +44,7 @@ const projectJSON = {
       type: "element",
       content: {
         elementType: "Router",
-        children: [
-          {
-            type: "conditional",
-            content: {
-              node: {
-                type: "element",
-                content: {
-                  elementType: "container",
-                  name: "home",
-                  children: []
-                }
-              },
-              value: "home",
-              reference: {
-                type: "dynamic",
-                content: {
-                  referenceType: "state",
-                  id: "route"
-                }
-              }
-            }
-          }
-        ]
+        children: []
       }
     }
   }
