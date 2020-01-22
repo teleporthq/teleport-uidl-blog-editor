@@ -1,11 +1,5 @@
 import React from "react";
 import AceEditor from "react-ace";
-import { packProject } from "@teleporthq/teleport-code-generator";
-import {
-  ProjectType,
-  PublisherType,
-  PackerOptions
-} from "@teleporthq/teleport-types";
 
 import { exportJson } from "../../utils/helpers";
 
