@@ -1,5 +1,6 @@
 import { UIDLStateValueDetails } from "@teleporthq/teleport-types";
-import marked from "marked";
+import unified from "unified";
+import markdownParser from "remark-parse";
 
 export const addRouteToUIDL = (fileName: string, uidl) => {
   const newRoute: UIDLStateValueDetails = {
@@ -12,6 +13,11 @@ export const addRouteToUIDL = (fileName: string, uidl) => {
   uidl.root.node.content.children.push(generateRouteNode(fileName));
   return uidl;
 };
+
+const parser = (content: string) =>
+  unified()
+    .use(markdownParser)
+    .parse(content);
 
 const generateRouteNode = (name: string) => {
   return {
@@ -38,7 +44,8 @@ const generateRouteNode = (name: string) => {
 };
 
 export const generateUIDLNodes = (content: string, name: string, uidl) => {
-  const tokens = marked.lexer(content);
+  const tree = parser(content);
+  let uidlNode = {};
   const newComponent = {
     [name]: {
       name: name,
@@ -51,26 +58,9 @@ export const generateUIDLNodes = (content: string, name: string, uidl) => {
       }
     }
   };
-  tokens.forEach(token => {
-    switch (token.type) {
-      case "paragraph":
-        {
-          const node = generateStaticNode(token.text, "p");
-          newComponent[name].node.content.children.push(node);
-        }
-        break;
-      case "heading":
-        {
-          const node = generateStaticNode(token.text, `h${token.depth}`);
-          newComponent[name].node.content.children.push(node);
-        }
-        break;
-      default: {
-        const node = generateStaticNode(token.text, "p");
-        newComponent[name].node.content.children.push(node);
-      }
-    }
-  });
+
+  generateElementNodes(tree);
+
   const newUIDl = {
     ...uidl,
     components: {
@@ -81,8 +71,37 @@ export const generateUIDLNodes = (content: string, name: string, uidl) => {
   return newUIDl;
 };
 
-const generateStaticNode = (content: string, tagName: string) => {
-  return {
+const generateElementNodes = tree => {
+  tree.children.forEach(treeNode => {
+    switch (treeNode.type) {
+      case "paragraph": {
+        if (treeNode.children) {
+          generateElementNodes(treeNode);
+        }
+        console.log(treeNode, "paragrph");
+        break;
+      }
+      case "heading": {
+        console.log(treeNode, "heading");
+        break;
+      }
+      case "link": {
+        console.log(treeNode, "link");
+        break;
+      }
+      case "text": {
+        console.log(treeNode, "simple text node");
+        break;
+      }
+      default:
+        console.log(treeNode, "un-recognized node");
+        break;
+    }
+  });
+};
+
+const generateStaticNode = (node, content: string, tagName: string) => {
+  const staticNode = {
     type: "element",
     content: {
       elementType: tagName,

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-import marked from "marked";
+import { markdownToHTML } from "../utils/helpers";
 
 import FileSystem from "../components/FileSystem";
 import projectTempalte from "../utils/project";
@@ -52,7 +52,7 @@ const BlogEditor = () => {
   const renderMarkdown = (content: string) => {
     const elm = document.getElementById("markdown_render");
     if (elm) {
-      elm.innerHTML = marked.inlineLexer(content, []);
+      elm.innerHTML = String(markdownToHTML(content));
     }
   };
 
