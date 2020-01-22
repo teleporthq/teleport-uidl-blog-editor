@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
+import marked from "marked";
+
 import FileSystem from "../components/FileSystem";
 import projectTempalte from "../utils/project";
+import { generateUIDLNodes } from "../utils/uidl-utils";
 
 const CodeEditor = dynamic(import("../components/CodeEditor"), { ssr: false });
 
@@ -16,16 +19,23 @@ const BlogEditor = () => {
       [id]: {
         id: id,
         name: "Home",
-        content: "Testing markdown descriptio"
+        content: ""
       }
     };
     setFiles(files);
     setActiveFile(id);
   }, []);
 
+  useEffect(() => {
+    const content = getActiveFile().content;
+    if (content) {
+      renderMarkdown(content);
+    }
+  }, [activeFile]);
+
   const getActiveFile = () => (files ? files[activeFile] : {});
 
-  const handleEditorValueChange = (newValue, name, fileId) => {
+  const handleEditorValueChange = (newValue: string, name: string, fileId) => {
     const newFiles = {
       ...files,
       [fileId]: {
@@ -34,6 +44,16 @@ const BlogEditor = () => {
       }
     };
     setFiles(newFiles);
+    const uidl = generateUIDLNodes(newValue, name, projectUIDL);
+    updateProjectUIDL(uidl);
+    renderMarkdown(newValue);
+  };
+
+  const renderMarkdown = (content: string) => {
+    const elm = document.getElementById("markdown_render");
+    if (elm) {
+      elm.innerHTML = marked(content);
+    }
   };
 
   return (
@@ -44,20 +64,38 @@ const BlogEditor = () => {
           activeFile={getActiveFile()}
           setActive={setActiveFile}
           setFiles={setFiles}
+          updateUIDL={updateProjectUIDL}
+          uidl={projectUIDL}
         />
         <section>
           <CodeEditor
+            uidl={projectUIDL}
             activeFile={getActiveFile()}
             handleOnChange={handleEditorValueChange}
           />
         </section>
-        <div>Render the blog design</div>
+        <section>
+          <div className="markdown_render_heading">Markdown</div>
+          <div id="markdown_render" className="markdown_renderer"></div>
+        </section>
       </section>
       <style jsx>{`
         .grid_wrapper {
           height: 100%;
           display: grid;
-          grid-template-columns: 150px 50% 50%;
+          grid-template-columns: 150px 50% 38%;
+        }
+
+        .markdown_renderer {
+          padding: 5px;
+        }
+
+        .markdown_render_heading {
+          margin: 10px;
+          padding-bottom: 5px;
+          text-align: left;
+          font-size: 20px;
+          border-bottom: 1px dotted #000;
         }
       `}</style>
     </>
