@@ -1,4 +1,4 @@
-import { UIDLStateValueDetails, ProjectUIDL } from "@teleporthq/teleport-types";
+import { UIDLStateValueDetails } from "@teleporthq/teleport-types";
 import marked from "marked";
 
 export const addRouteToUIDL = (fileName: string, uidl) => {
@@ -9,7 +9,32 @@ export const addRouteToUIDL = (fileName: string, uidl) => {
     }
   };
   uidl.root.stateDefinitions.route.values.push(newRoute);
+  uidl.root.node.content.children.push(generateRouteNode(fileName));
   return uidl;
+};
+
+const generateRouteNode = (name: string) => {
+  return {
+    type: "conditional",
+    content: {
+      node: {
+        type: "element",
+        content: {
+          elementType: "container",
+          name: `${name}`,
+          children: []
+        }
+      },
+      value: `${name}`,
+      reference: {
+        type: "dynamic",
+        content: {
+          referenceType: "state",
+          id: "route"
+        }
+      }
+    }
+  };
 };
 
 export const generateUIDLNodes = (content: string, name: string, uidl) => {

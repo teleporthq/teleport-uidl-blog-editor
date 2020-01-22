@@ -19,6 +19,7 @@ const projectJSON = {
     ],
     meta: [],
     manifest: {
+      icons: [],
       theme_color: "#822CEC",
       background_color: "#822CEC"
     }
@@ -34,6 +35,35 @@ const projectJSON = {
             value: "home",
             pageOptions: {
               navLink: "/"
+            }
+          }
+        ]
+      }
+    },
+    node: {
+      type: "element",
+      content: {
+        elementType: "Router",
+        children: [
+          {
+            type: "conditional",
+            content: {
+              node: {
+                type: "element",
+                content: {
+                  elementType: "container",
+                  name: "home",
+                  children: []
+                }
+              },
+              value: "home",
+              reference: {
+                type: "dynamic",
+                content: {
+                  referenceType: "state",
+                  id: "route"
+                }
+              }
             }
           }
         ]

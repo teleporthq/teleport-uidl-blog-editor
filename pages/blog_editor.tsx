@@ -26,6 +26,13 @@ const BlogEditor = () => {
     setActiveFile(id);
   }, []);
 
+  useEffect(() => {
+    const content = getActiveFile().content;
+    if (content) {
+      renderMarkdown(content);
+    }
+  }, [activeFile]);
+
   const getActiveFile = () => (files ? files[activeFile] : {});
 
   const handleEditorValueChange = (newValue: string, name: string, fileId) => {
@@ -39,9 +46,13 @@ const BlogEditor = () => {
     setFiles(newFiles);
     const uidl = generateUIDLNodes(newValue, name, projectUIDL);
     updateProjectUIDL(uidl);
+    renderMarkdown(newValue);
+  };
+
+  const renderMarkdown = (content: string) => {
     const elm = document.getElementById("markdown_render");
     if (elm) {
-      elm.innerHTML = marked(newValue);
+      elm.innerHTML = marked(content);
     }
   };
 
@@ -64,9 +75,7 @@ const BlogEditor = () => {
           />
         </section>
         <section>
-          <div className="markdown_render_heading">
-            Markdown is rendered here
-          </div>
+          <div className="markdown_render_heading">Markdown</div>
           <div id="markdown_render" className="markdown_renderer"></div>
         </section>
       </section>
