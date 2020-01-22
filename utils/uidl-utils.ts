@@ -53,12 +53,20 @@ export const generateUIDLNodes = (content: string, name: string, uidl) => {
   };
   tokens.forEach(token => {
     switch (token.type) {
-      case "paragraph": {
+      case "paragraph":
+        {
+          const node = generateStaticNode(token.text, "p");
+          newComponent[name].node.content.children.push(node);
+        }
+        break;
+      case "heading":
+        {
+          const node = generateStaticNode(token.text, `h${token.depth}`);
+          newComponent[name].node.content.children.push(node);
+        }
+        break;
+      default: {
         const node = generateStaticNode(token.text, "p");
-        newComponent[name].node.content.children.push(node);
-      }
-      case "heading": {
-        const node = generateStaticNode(token.text, `h${token.depth}`);
         newComponent[name].node.content.children.push(node);
       }
     }

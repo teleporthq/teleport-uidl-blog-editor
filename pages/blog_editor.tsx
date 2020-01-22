@@ -52,7 +52,7 @@ const BlogEditor = () => {
   const renderMarkdown = (content: string) => {
     const elm = document.getElementById("markdown_render");
     if (elm) {
-      elm.innerHTML = marked(content);
+      elm.innerHTML = marked.inlineLexer(content, []);
     }
   };
 
