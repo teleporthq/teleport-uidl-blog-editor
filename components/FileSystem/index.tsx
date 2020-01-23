@@ -53,7 +53,7 @@ const FileSystem = ({
           className="secondary_button"
           onClick={() => setModalStatus(true)}
         >
-          + Create File
+          + Add Page
         </button>
         <hr />
         <Modal isOpen={isModalOpen} style={customStyle} ariaHideApp={false}>

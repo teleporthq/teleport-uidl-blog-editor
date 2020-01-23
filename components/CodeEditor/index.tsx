@@ -1,6 +1,13 @@
 import React from "react";
 import AceEditor from "react-ace";
 
+import { createProjectPacker } from "@teleporthq/teleport-project-packer";
+import {
+  createReactProjectGenerator,
+  ReactTemplate
+} from "@teleporthq/teleport-project-generator-react";
+import { ProjectUIDL } from "@teleporthq/teleport-types";
+
 import { exportJson } from "../../utils/helpers";
 
 import "brace/mode/markdown";
@@ -11,7 +18,13 @@ const CodeEditor = ({ activeFile, handleOnChange, uidl }) => {
   const { id, name, content } = activeFile;
   const el = document.getElementById("download_uidl");
 
-  const handlePackProject = async () => {};
+  const handlePackProject = async () => {
+    const packer = createProjectPacker();
+    packer.setTemplate(ReactTemplate);
+    packer.setGenerator(createReactProjectGenerator());
+    const project = await packer.pack(uidl as ProjectUIDL);
+    console.log(project);
+  };
 
   return (
     <>
