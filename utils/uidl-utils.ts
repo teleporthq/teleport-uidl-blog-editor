@@ -46,15 +46,15 @@ const filterPages = (name: string, uidl) => {
 export const generateUIDLNodes = (content: string, name: string, uidl) => {
   const tree = parser(content);
 
-  const pages = filterPages(name, uidl);
-
   // TODO - Generate UIDL nodes from the parsed tree
   const generatedUIDL = generateUIDL(tree, generateElementNode("container"));
-  // console.log(JSON.stringify(generatedUIDL, null, 2));
+  console.log(JSON.stringify(generatedUIDL, null, 2));
+
+  const pages = filterPages(name, uidl);
   const currentPage = generateRouteNode(name, generatedUIDL);
 
   uidl.root.node.content.children.push(currentPage, { ...pages });
-  console.log(JSON.stringify(uidl, null, 2));
+  // console.log(JSON.stringify(uidl, null, 2));
   return uidl;
 };
 
@@ -92,8 +92,19 @@ const generateUIDL = (tree, parentNode) => {
         return parentNode;
       }
       case "code": {
-        const codeBlockNode = generateCustomtNodeWithContent(treeNode.type, "");
+        const codeBlockNode = generateCustomtNodeWithContent(
+          treeNode.type,
+          null
+        );
         parentNode.content.children.push(codeBlockNode);
+        return parentNode;
+      }
+      case "image": {
+        const imageNode = generateCustomtNodeWithContent(treeNode.type, null, {
+          url: treeNode.url,
+          alt: treeNode.alt
+        });
+        parentNode.content.children.push(imageNode);
         return parentNode;
       }
       default: {
@@ -115,7 +126,8 @@ const generateUIDL = (tree, parentNode) => {
 const htmlTagNameMapper = (tagType: string) => {
   const elements = {
     heading: "h2",
-    emphasis: "em"
+    emphasis: "em",
+    listItem: "li"
   };
   return elements[tagType] ? elements[tagType] : tagType;
 };
@@ -156,19 +168,35 @@ const generateHeadingNode = tagName => {
   };
 };
 
-const generateCustomtNodeWithContent = (tagName: string, content: string) => {
-  return {
+const generateCustomtNodeWithContent = (
+  tagName: string,
+  content?: string,
+  attrs?: any
+) => {
+  let node = {
     type: "element",
     content: {
-      elementType: "text",
-      children: [
-        {
-          type: "static",
-          content: `${content}`
-        }
-      ]
+      elementType: `${tagName}`,
+      attrs: {},
+      children: []
     }
   };
+  if (content) {
+    node.content.children.push({
+      type: "static",
+      content: `${content}`
+    });
+  }
+  if (attrs) {
+    node = {
+      ...node,
+      content: {
+        ...node.content,
+        attrs
+      }
+    };
+  }
+  return node;
 };
 
 const generateStaticTextNode = (content: string) => {
