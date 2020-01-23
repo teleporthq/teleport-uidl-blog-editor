@@ -38,23 +38,26 @@ const generateRouteNode = (name: string, uidlNodes) => {
 
 const filterPages = (name: string, uidl) => {
   const pages = uidl.root.node.content.children;
-  return pages.filter(page => {
-    return page.content.value !== name;
-  });
+  if (pages.length > 0) {
+    return pages.filter(page => {
+      if (page && page.content) {
+        return page.content.value !== name;
+      }
+    });
+  }
+  return [];
 };
 
 export const generateUIDLNodes = (content: string, name: string, uidl) => {
   const tree = parser(content);
-
-  // TODO - Generate UIDL nodes from the parsed tree
   const generatedUIDL = generateUIDL(tree, generateElementNode("container"));
-  console.log(JSON.stringify(generatedUIDL, null, 2));
 
   const pages = filterPages(name, uidl);
   const currentPage = generateRouteNode(name, generatedUIDL);
 
-  uidl.root.node.content.children.push(currentPage, { ...pages });
-  // console.log(JSON.stringify(uidl, null, 2));
+  uidl.root.node.content.children = [currentPage, ...pages];
+  console.log(JSON.stringify(uidl, null, 2));
+
   return uidl;
 };
 
@@ -94,7 +97,7 @@ const generateUIDL = (tree, parentNode) => {
       case "code": {
         const codeBlockNode = generateCustomtNodeWithContent(
           treeNode.type,
-          null
+          `${String(treeNode.value)}`
         );
         parentNode.content.children.push(codeBlockNode);
         return parentNode;
@@ -105,6 +108,13 @@ const generateUIDL = (tree, parentNode) => {
           alt: treeNode.alt
         });
         parentNode.content.children.push(imageNode);
+        return parentNode;
+      }
+      case "html": {
+        const htmlNode = generateCustomtNodeWithContent("span", null, {
+          dangerouslySetInnerHTML: `{{ __html: ${treeNode.value}}}`
+        });
+        parentNode.content.children.push(htmlNode);
         return parentNode;
       }
       default: {
