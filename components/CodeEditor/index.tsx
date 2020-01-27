@@ -6,6 +6,7 @@ import {
   createReactProjectGenerator,
   ReactTemplate
 } from "@teleporthq/teleport-project-generator-react";
+import { createCodesandboxPublisher } from "@teleporthq/teleport-publisher-codesandbox";
 import { ProjectUIDL } from "@teleporthq/teleport-types";
 
 import { exportJson } from "../../utils/helpers";
@@ -22,8 +23,9 @@ const CodeEditor = ({ activeFile, handleOnChange, uidl }) => {
     const packer = createProjectPacker();
     packer.setTemplate(ReactTemplate);
     packer.setGenerator(createReactProjectGenerator());
+    packer.setPublisher(createCodesandboxPublisher());
     const project = await packer.pack(uidl as ProjectUIDL);
-    console.log(project);
+    window.open(project.payload, "_blank");
   };
 
   return (
