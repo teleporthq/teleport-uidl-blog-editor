@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import BlogEditor from "./blog_editor";
 
 const Home = () => {

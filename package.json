@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "next",
+    "dev": "next && micro-dev",
     "build": "next build",
     "start": "next start"
   },
@@ -14,6 +14,8 @@
     "@teleporthq/teleport-project-packer": "^0.10.1",
     "@teleporthq/teleport-publisher-codesandbox": "^0.10.1",
     "brace": "^0.11.1",
+    "firebase": "^7.7.0",
+    "firebase-admin": "^8.9.2",
     "monaco-editor": "^0.19.3",
     "next": "^9.2.0",
     "prismjs": "^1.19.0",

@@ -5,25 +5,27 @@ import { markdownToHTML } from "../utils/helpers";
 import FileSystem from "../components/FileSystem";
 import projectTempalte from "../utils/project";
 import { generateUIDLNodes } from "../utils/uidl-utils";
+import firebase from "firebase";
+import fb from "../firebase";
 
 const CodeEditor = dynamic(import("../components/CodeEditor"), { ssr: false });
 
 const BlogEditor = () => {
+  const [user, setUser] = useState<{ email: string } | null>(null);
   const [files, setFiles] = useState(null);
   const [activeFile, setActiveFile] = useState(null);
   const [projectUIDL, updateProjectUIDL] = useState(projectTempalte);
 
   useEffect(() => {
-    const id = Date.now();
-    const files = {
-      [id]: {
-        id: id,
-        name: "home",
-        content: ""
+    // check user status
+    fb.app.auth().onAuthStateChanged(user => {
+      if (!user) {
+        logIn();
+        return;
       }
-    };
-    setFiles(files);
-    setActiveFile(id);
+
+      initUserData();
+    });
   }, []);
 
   useEffect(() => {
@@ -33,9 +35,33 @@ const BlogEditor = () => {
     }
   }, [activeFile]);
 
-  const getActiveFile = () => (files ? files[activeFile] : {});
+  const initUserData = async () => {
+    // update user info
+    setUser({
+      email: fb.app.auth().currentUser.email
+    });
+
+    // retrieve data
+    let files = await fb.getUserFiles();
+    if (!files) {
+      const id = Date.now();
+      files = {
+        [id]: {
+          id,
+          name: "home",
+          content: ""
+        }
+      };
+    }
+
+    setFiles(files);
+    setActiveFile(Object.keys(files)[0]);
+  };
+
+  const getActiveFile = () => (files && activeFile ? files[activeFile] : {});
 
   const handleEditorValueChange = (newValue: string, name: string, fileId) => {
+    console.log(newValue, name, fileId);
     const newFiles = {
       ...files,
       [fileId]: {
@@ -44,6 +70,7 @@ const BlogEditor = () => {
       }
     };
     setFiles(newFiles);
+    fb.updateUserFiles(files);
     const uidl = generateUIDLNodes(newValue, name, projectUIDL);
     updateProjectUIDL(uidl);
     renderMarkdown(newValue);
@@ -56,8 +83,38 @@ const BlogEditor = () => {
     }
   };
 
+  const logIn = () => {
+    fb.app
+      .auth()
+      .signInWithPopup(new firebase.auth.GoogleAuthProvider())
+      .then(function(user) {
+        setUser({
+          email: user.user.email
+        });
+      })
+      .catch(function(error) {
+        alert("Something went wrong, check your console.");
+        console.log(error);
+      });
+  };
+
+  const signOut = async () => {
+    fb.app.auth().signOut();
+  };
+
   return (
     <>
+      <header style={{ margin: 10 }}>
+        {user ? (
+          <span>
+            {fb.app.auth().currentUser.displayName} (
+            {fb.app.auth().currentUser.email}){" "}
+            <button onClick={signOut}>Log out</button>
+          </span>
+        ) : (
+          <button onClick={logIn}>Log In</button>
+        )}
+      </header>
       <section className="grid_wrapper">
         <FileSystem
           files={files}

@@ -27,6 +27,7 @@ const FileSystem = ({
   updateUIDL,
   uidl
 }) => {
+  console.log("activeFile", activeFile);
   const [isModalOpen, setModalStatus] = useState(false);
   const [fileName, setFileName] = useState("");
 

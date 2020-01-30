@@ -56,7 +56,7 @@ export const generateUIDLNodes = (content: string, name: string, uidl) => {
   const currentPage = generateRouteNode(name, generatedUIDL);
 
   uidl.root.node.content.children = [currentPage, ...pages];
-  console.log(JSON.stringify(uidl, null, 2));
+  // console.log(JSON.stringify(uidl, null, 2));
 
   return uidl;
 };
