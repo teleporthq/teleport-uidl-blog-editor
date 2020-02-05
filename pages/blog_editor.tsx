@@ -1,19 +1,25 @@
+import { ProjectUIDL } from '@teleporthq/teleport-types'
 import React, { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
-import preview from '../utils/bundler'
-import FileSystem from '../components/FileSystem'
-import projectTempalte from '../utils/project'
 import firebase from 'firebase'
+
+import Header from '../components/Header'
+import FileSystem from '../components/FileSystem'
+import { File, Files, BlogMeta } from '../utils/types'
+import { generateProjectUIDLTemplate } from '../utils/project'
+import preview from '../utils/bundler'
 import fb from '../firebase'
 
 const CodeEditor = dynamic(import('../components/CodeEditor'), { ssr: false })
 
 const BlogEditor = () => {
   const [user, setUser] = useState<{ email: string } | null>(null)
-  const [files, setFiles] = useState(null)
-  const [activeFile, setActiveFile] = useState(null)
-  const [projectUIDL, updateProjectUIDL] = useState(projectTempalte)
-
+  const [files, setFiles] = useState<Files>(null)
+  const [activeFile, setActiveFile] = useState<string>(null)
+  const [projectMeta, setProjectMeta] = useState<BlogMeta>({
+    blogName: 'teleport-blog',
+    blogDescription: ' A easy to use and pre-defined blogging setup',
+  })
   // useEffect(() => {
   //   // check user status
   //   fb.app.auth().onAuthStateChanged(user => {
@@ -28,17 +34,26 @@ const BlogEditor = () => {
 
   useEffect(() => {
     const id = Date.now()
-    const files = {
+    const updatedFiles: Files = {
       [id]: {
-        id: id,
-        name: 'home',
+        id,
+        name: 'Home',
+        slug: 'home',
+        home: true,
         content: `# home`,
       },
     }
-    setFiles(files)
-    setActiveFile(id)
+    setFiles(updatedFiles)
+    setActiveFile(String(id))
     preview(`# home`)
   }, [])
+
+  useEffect(() => {
+    const file: File = getActiveFile()
+    if (file) {
+      preview(file.content)
+    }
+  }, [activeFile])
 
   const initUserData = async () => {
     // update user info
@@ -47,13 +62,14 @@ const BlogEditor = () => {
     })
 
     // retrieve data
-    let files = await fb.getUserFiles()
+    let updatedFiles: Files = await fb.getUserFiles()
     if (!files) {
       const id = Date.now()
-      files = {
+      updatedFiles = {
         [id]: {
           id,
           name: 'home',
+          slug: 'home',
           content: '',
         },
       }
@@ -62,17 +78,19 @@ const BlogEditor = () => {
     setActiveFile(Object.keys(files)[0])
   }
 
-  const getActiveFile = () => (files && activeFile ? files[activeFile] : {})
+  const getActiveFile = () => (files && activeFile ? files[activeFile] : null)
 
-  const handleEditorValueChange = (newValue: string, name: string, fileId) => {
+  const handleEditorValueChange = (value: string, pageName: string, fileId: string) => {
     const newFiles = {
       ...files,
       [fileId]: {
         ...files[fileId],
-        content: newValue,
+        name: pageName,
+        content: value,
       },
     }
-    preview(newValue)
+    preview(value)
+    setFiles(newFiles)
     // fb.updateUserFiles(files);
   }
 
@@ -80,14 +98,14 @@ const BlogEditor = () => {
     fb.app
       .auth()
       .signInWithPopup(new firebase.auth.GoogleAuthProvider())
-      .then(function(user) {
+      .then((firebaseUser: any) => {
         setUser({
-          email: user.user.email,
+          email: firebaseUser.user.email,
         })
       })
-      .catch(function(error) {
+      .catch((error) => {
         alert('Something went wrong, check your console.')
-        console.log(error)
+        console.error(error)
       })
   }
 
@@ -113,18 +131,16 @@ const BlogEditor = () => {
           activeFile={getActiveFile()}
           setActive={setActiveFile}
           setFiles={setFiles}
-          updateUIDL={updateProjectUIDL}
-          uidl={projectUIDL}
         />
         <section>
+          <Header files={files} meta={projectMeta} activeFile={getActiveFile()} />
           <CodeEditor
-            uidl={projectUIDL}
             activeFile={getActiveFile()}
             handleOnChange={handleEditorValueChange}
           />
         </section>
         <section>
-          <div className="markdown_render_heading">Markdown</div>
+          <div className="markdown_render_heading">Preview</div>
           <div id="output" className="markdown_renderer"></div>
         </section>
       </section>
