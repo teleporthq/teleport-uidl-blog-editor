@@ -27,9 +27,9 @@ const FileSystem = ({
   updateUIDL,
   uidl
 }) => {
-  console.log("activeFile", activeFile);
   const [isModalOpen, setModalStatus] = useState(false);
   const [fileName, setFileName] = useState("");
+  const [hoverIndex, setHoverIndex] = useState(-1);
 
   const handleCreateFile = () => {
     const id = Date.now();
@@ -49,14 +49,8 @@ const FileSystem = ({
   return (
     <>
       <section className="files_wrapper">
-        <img src="./teleport-logo-dark.svg" className="logo" />
-        <button
-          className="secondary_button"
-          onClick={() => setModalStatus(true)}
-        >
-          + Add Page
-        </button>
-        <hr />
+        {/* <img src="./teleport-logo-dark.svg" className="logo" /> */}
+        {/*  */}
         <Modal isOpen={isModalOpen} style={customStyle} ariaHideApp={false}>
           <section>
             <input
@@ -76,42 +70,43 @@ const FileSystem = ({
           Object.values(files).map(({ name, id }, index) => {
             return (
               <div
-                className="file_icon"
+                className={`file${activeFile.id === id ? " active" : ""}`}
                 key={`${name}-${index}`}
                 onClick={() => setActive(id)}
-                style={{
-                  color: activeFile.id === id ? "#2f3031" : "#fff",
-                  backgroundColor: activeFile.id === id ? "#fff" : "#2f3031"
-                }}
+                onMouseOver={() => setHoverIndex(id)}
               >
                 {name}
+                {id !== hoverIndex || <img src="3points.svg" />}
               </div>
             );
           })}
+        <button
+          className="secondary_button"
+          onClick={() => setModalStatus(true)}
+        >
+          + Add Page
+        </button>
       </section>
-
       <style jsx>{`
-        .filename_wrapper {
-          font-size: 14px;
-          padding: 5px 15px;
+        .file {
+          color: #e2e3e3;
+          padding-left: 40px;
+          line-height: 32px;
+          user-select: none;
+          display: flex;
+          justify-content: space-between;
         }
 
-        .file_icon {
-          font-size: 14px;
-          text-align: left;
-          text-transform: capitalize;
-          margin-bottom: 10px;
-          padding: 5px 10px;
-          border-radius: 4px;
-          border: 1px solid #ddd;
-          cursor: pointer;
+        .file > img {
+          padding: 0 10px;
         }
 
-        .files_wrapper {
-          color: #fff;
-          background-color: #2f3031;
-          padding: 0px 15px;
-          border-right: 0.1px solid #ddd;
+        .active {
+          background-color: #66696c;
+        }
+
+        .file:not(.active):hover {
+          background-color: #66696c;
         }
 
         .logo {

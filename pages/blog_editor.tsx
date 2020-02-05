@@ -7,6 +7,7 @@ import projectTempalte from "../utils/project";
 import { generateUIDLNodes } from "../utils/uidl-utils";
 import firebase from "firebase";
 import fb from "../firebase";
+import Resizable from "../components/Resizable";
 
 const CodeEditor = dynamic(import("../components/CodeEditor"), { ssr: false });
 
@@ -104,7 +105,7 @@ const BlogEditor = () => {
 
   return (
     <>
-      <header style={{ margin: 10 }}>
+      {/* <header style={{ margin: 10 }}>
         {user ? (
           <span>
             {fb.app.auth().currentUser.displayName} (
@@ -114,45 +115,79 @@ const BlogEditor = () => {
         ) : (
           <button onClick={logIn}>Log In</button>
         )}
-      </header>
-      <section className="grid_wrapper">
-        <FileSystem
-          files={files}
-          activeFile={getActiveFile()}
-          setActive={setActiveFile}
-          setFiles={setFiles}
-          updateUIDL={updateProjectUIDL}
-          uidl={projectUIDL}
-        />
-        <section>
+      </header> */}
+      <section className="main">
+        <Resizable minWidth={250} maxWidth={800}>
+          <div className="files">
+            <div className="menu">
+              Blogport
+              <span className="icons">
+                <img className="arrow" src="refresh.svg"></img>
+                <img className="arrow" src="close.svg"></img>
+              </span>
+            </div>
+            <div className="title">
+              <img className="arrow" src="arrow-down.svg"></img>Design
+              Principles
+            </div>
+            <FileSystem
+              files={files}
+              activeFile={getActiveFile()}
+              setActive={setActiveFile}
+              setFiles={setFiles}
+              updateUIDL={updateProjectUIDL}
+              uidl={projectUIDL}
+            />
+          </div>
+        </Resizable>
+        <Resizable minWidth={400} maxWidth={800}>
           <CodeEditor
             uidl={projectUIDL}
             activeFile={getActiveFile()}
             handleOnChange={handleEditorValueChange}
           />
-        </section>
-        <section>
+        </Resizable>
+        <div className="render">
           <div className="markdown_render_heading">Markdown</div>
           <div id="markdown_render" className="markdown_renderer"></div>
-        </section>
+        </div>
       </section>
       <style jsx>{`
-        .grid_wrapper {
+        .main {
+          display: flex;
           height: 100%;
-          display: grid;
-          grid-template-columns: 150px 50% 38%;
         }
 
-        .markdown_renderer {
-          padding: 5px;
+        .files {
+          flex: 1;
+          flex-direction: column;
+          display: flex;
+          background-color: #2a2e30;
+          color: #e2e3e3;
+          font-size: 18px;
+          font-weight: medium;
         }
 
-        .markdown_render_heading {
-          margin: 10px;
-          padding-bottom: 5px;
-          text-align: left;
-          font-size: 20px;
-          border-bottom: 1px dotted #000;
+        .menu {
+          line-height: 76px;
+          margin: 0 30px 20px 30px;
+          font-size: 24px;
+          color: #9fa2a3;
+          border-bottom: solid 1px #66696c;
+          display: flex;
+          justify-content: space-between;
+        }
+
+        .menu > span {
+          display: flex;
+        }
+
+        .title {
+          line-height: 32px;
+        }
+
+        .arrow {
+          padding: 0 9px;
         }
       `}</style>
     </>

@@ -12,7 +12,7 @@ const Home = () => {
             width: 100%;
             height: 100%;
             margin: 0px;
-            font-family: "Lato", sans-serif;
+            font-family: "Helvetica Neue";
           }
 
           #__next {

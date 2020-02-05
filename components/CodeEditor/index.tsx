@@ -52,9 +52,11 @@ const CodeEditor = ({ activeFile, handleOnChange, uidl }) => {
         highlightActiveLine
         onChange={value => handleOnChange(value, name, id)}
         style={{
+          backgroundColor: "#24272A",
           width: "100%",
           height: "calc(100% - 50px)",
           zIndex: 1,
+          color: "#E2E3E3",
           fontFamily:
             "Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace"
         }}
@@ -67,7 +69,7 @@ const CodeEditor = ({ activeFile, handleOnChange, uidl }) => {
           .header_wrapper {
             display: flex;
             justify-content: space-around;
-            background-color: #2f3031;
+            background-color: #24272a;
           }
 
           .open_file_name {
