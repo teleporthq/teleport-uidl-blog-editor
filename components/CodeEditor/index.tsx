@@ -1,47 +1,26 @@
 import React from "react";
 import AceEditor from "react-ace";
 
-import { createProjectPacker } from "@teleporthq/teleport-project-packer";
-import {
-  createReactProjectGenerator,
-  ReactTemplate
-} from "@teleporthq/teleport-project-generator-react";
-import { createCodesandboxPublisher } from "@teleporthq/teleport-publisher-codesandbox";
-import { ProjectUIDL } from "@teleporthq/teleport-types";
-
-import { exportJson } from "../../utils/helpers";
-
 import "brace/mode/markdown";
 import "brace/theme/monokai";
 import "brace/ext/searchbox";
 
 const CodeEditor = ({ activeFile, handleOnChange, uidl }) => {
   const { id, name, content } = activeFile;
-  const el = document.getElementById("download_uidl");
 
-  const handlePackProject = async () => {
-    const packer = createProjectPacker();
-    packer.setTemplate(ReactTemplate);
-    packer.setGenerator(createReactProjectGenerator());
-    packer.setPublisher(createCodesandboxPublisher());
-    const project = await packer.pack(uidl as ProjectUIDL);
-    window.open(project.payload, "_blank");
-  };
+  // const handlePackProject = async () => {
+  //   const packer = createProjectPacker();
+  //   packer.setTemplate(ReactTemplate);
+  //   packer.setGenerator(createReactProjectGenerator());
+  //   packer.setPublisher(createCodesandboxPublisher());
+  //   const project = await packer.pack(uidl as ProjectUIDL);
+  //   window.open(project.payload, "_blank");
+  // };
 
   return (
     <>
       <section className="header_wrapper">
-        <div className="open_file_name">{name}</div>
-        <a
-          id="download_uidl"
-          className="secondary_button"
-          onClick={() => exportJson(el, uidl)}
-        >
-          Download UIDL
-        </a>
-        <button className="secondary_button" onClick={handlePackProject}>
-          Download Project
-        </button>
+        <div className="pageTitle">{name}</div>
       </section>
       <AceEditor
         mode="markdown"
@@ -70,6 +49,11 @@ const CodeEditor = ({ activeFile, handleOnChange, uidl }) => {
             display: flex;
             justify-content: space-around;
             background-color: #24272a;
+          }
+          .pageTitle {
+            font-size: 24px;
+            color: #e2e3e3;
+            margin: 0 30px 20px 30px;
           }
 
           .open_file_name {

@@ -1,21 +1,46 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, MutableRefObject } from "react";
 import dynamic from "next/dynamic";
 import { markdownToHTML } from "../utils/helpers";
 
 import FileSystem from "../components/FileSystem";
-import projectTempalte from "../utils/project";
+import projectTemplate from "../utils/project";
 import { generateUIDLNodes } from "../utils/uidl-utils";
 import firebase from "firebase";
 import fb from "../firebase";
 import Resizable from "../components/Resizable";
+import { exportJson } from "../utils/helpers";
+
+import { createProjectPacker } from "@teleporthq/teleport-project-packer";
+import {
+  createReactProjectGenerator,
+  ReactTemplate
+} from "@teleporthq/teleport-project-generator-react";
+import { createCodesandboxPublisher } from "@teleporthq/teleport-publisher-codesandbox";
+import { ProjectUIDL } from "@teleporthq/teleport-types";
+
+// onClick={() => exportJson(el, uidl)}
 
 const CodeEditor = dynamic(import("../components/CodeEditor"), { ssr: false });
 
 const BlogEditor = () => {
+  const downloadUidl: MutableRefObject<HTMLAnchorElement> = useRef(null);
   const [user, setUser] = useState<{ email: string } | null>(null);
   const [files, setFiles] = useState(null);
   const [activeFile, setActiveFile] = useState(null);
-  const [projectUIDL, updateProjectUIDL] = useState(projectTempalte);
+  const [projectUIDL, updateProjectUIDL] = useState(projectTemplate);
+
+  const handlePackProject = async () => {
+    try {
+      const packer = createProjectPacker();
+      packer.setTemplate(ReactTemplate);
+      packer.setGenerator(createReactProjectGenerator());
+      packer.setPublisher(createCodesandboxPublisher());
+      const project = await packer.pack(projectUIDL as ProjectUIDL);
+      window.open(project.payload, "_blank");
+    } catch (error) {
+      alert(error.toString());
+    }
+  };
 
   useEffect(() => {
     // check user status
@@ -62,7 +87,7 @@ const BlogEditor = () => {
   const getActiveFile = () => (files && activeFile ? files[activeFile] : {});
 
   const handleEditorValueChange = (newValue: string, name: string, fileId) => {
-    console.log(newValue, name, fileId);
+    // console.log(newValue, name, fileId);
     const newFiles = {
       ...files,
       [fileId]: {
@@ -105,39 +130,58 @@ const BlogEditor = () => {
 
   return (
     <>
-      {/* <header style={{ margin: 10 }}>
-        {user ? (
-          <span>
-            {fb.app.auth().currentUser.displayName} (
-            {fb.app.auth().currentUser.email}){" "}
-            <button onClick={signOut}>Log out</button>
-          </span>
-        ) : (
-          <button onClick={logIn}>Log In</button>
-        )}
-      </header> */}
       <section className="main">
         <Resizable minWidth={250} maxWidth={800}>
           <div className="files">
-            <div className="menu">
-              Blogport
-              <span className="icons">
-                <img className="arrow" src="refresh.svg"></img>
-                <img className="arrow" src="close.svg"></img>
-              </span>
+            <div>
+              <div className="menu">
+                Blogport
+                <span className="icons">
+                  <img className="arrow" src="refresh.svg"></img>
+                  <img className="arrow" src="close.svg"></img>
+                </span>
+              </div>
+              <div className="title">
+                <img className="arrow" src="arrow-down.svg"></img>Design
+                Principles
+              </div>
+              <FileSystem
+                files={files}
+                activeFile={getActiveFile()}
+                setActive={setActiveFile}
+                setFiles={setFiles}
+                updateUIDL={updateProjectUIDL}
+                uidl={projectUIDL}
+              />
             </div>
-            <div className="title">
-              <img className="arrow" src="arrow-down.svg"></img>Design
-              Principles
-            </div>
-            <FileSystem
-              files={files}
-              activeFile={getActiveFile()}
-              setActive={setActiveFile}
-              setFiles={setFiles}
-              updateUIDL={updateProjectUIDL}
-              uidl={projectUIDL}
-            />
+
+            <footer>
+              <a
+                ref={downloadUidl}
+                className="action"
+                onClick={() => exportJson(downloadUidl.current, projectUIDL)}
+              >
+                Download UIDL
+              </a>{" "}
+              or{" "}
+              <a onClick={() => handlePackProject()} className="action">
+                Export to Codesandbox
+              </a>
+              <hr />
+              {user ? (
+                <span style={{ fontSize: 16 }}>
+                  {fb.app.auth().currentUser.displayName} (
+                  {fb.app.auth().currentUser.email}){" "}
+                  <span className="action" onClick={signOut}>
+                    Log out
+                  </span>
+                </span>
+              ) : (
+                <span className="action" onClick={logIn}>
+                  Log In
+                </span>
+              )}
+            </footer>
           </div>
         </Resizable>
         <Resizable minWidth={400} maxWidth={800}>
@@ -166,6 +210,14 @@ const BlogEditor = () => {
           color: #e2e3e3;
           font-size: 18px;
           font-weight: medium;
+          justify-content: space-between;
+        }
+
+        .action {
+          font-size: 16px;
+          color: #9fa2a3;
+          text-decoration: underline;
+          cursor: pointer;
         }
 
         .menu {
@@ -188,6 +240,10 @@ const BlogEditor = () => {
 
         .arrow {
           padding: 0 9px;
+        }
+
+        footer {
+          margin: 30px;
         }
       `}</style>
     </>

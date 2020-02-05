@@ -76,7 +76,7 @@ const FileSystem = ({
                 onMouseOver={() => setHoverIndex(id)}
               >
                 {name}
-                {id !== hoverIndex || <img src="3points.svg" />}
+                {id !== hoverIndex || <span className="contextMenu" />}
               </div>
             );
           })}
@@ -88,6 +88,16 @@ const FileSystem = ({
         </button>
       </section>
       <style jsx>{`
+        .contextMenu {
+          background-image: url("3points.svg");
+          padding: 0 10px;
+          height: 4px;
+          width: 16px;
+          height: auto;
+          background-repeat: no-repeat;
+          background-position: center;
+        }
+
         .file {
           color: #e2e3e3;
           padding-left: 40px;
@@ -97,16 +107,12 @@ const FileSystem = ({
           justify-content: space-between;
         }
 
-        .file > img {
-          padding: 0 10px;
-        }
-
         .active {
           background-color: #66696c;
         }
 
         .file:not(.active):hover {
-          background-color: #66696c;
+          background-color: #484b4e;
         }
 
         .logo {

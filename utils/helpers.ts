@@ -8,7 +8,7 @@ export const markdownToHTML = (content: string) =>
     .use(html)
     .processSync(content);
 
-export const exportJson = (el, uidl) => {
+export const exportJson = (el: HTMLAnchorElement, uidl) => {
   const data =
     "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(uidl));
 
