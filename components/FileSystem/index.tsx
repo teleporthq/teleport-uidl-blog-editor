@@ -1,59 +1,48 @@
-import React, { useState } from "react";
-import Modal from "react-modal";
-import { addRouteToUIDL } from "../../utils/uidl-utils";
+import React, { useState } from 'react'
+import Modal from 'react-modal'
+import { slugify } from '../../utils/helpers'
 
 const customStyle: ReactModal.Styles = {
   overlay: {
-    zIndex: 10
+    zIndex: 10,
   },
   content: {
-    textAlign: "center",
-    color: "#000",
-    top: "50%",
-    left: "50%",
-    right: "auto",
-    bottom: "auto",
-    marginRight: "-50%",
-    borderRadius: "4px",
-    transform: "translate(-50%, -50%)"
-  }
-};
+    textAlign: 'center',
+    color: '#000',
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    borderRadius: '4px',
+    transform: 'translate(-50%, -50%)',
+  },
+}
 
-const FileSystem = ({
-  files,
-  activeFile,
-  setActive,
-  setFiles,
-  updateUIDL,
-  uidl
-}) => {
-  console.log("activeFile", activeFile);
-  const [isModalOpen, setModalStatus] = useState(false);
-  const [fileName, setFileName] = useState("");
+const FileSystem = ({ files, activeFile, setActive, setFiles }) => {
+  const [isModalOpen, setModalStatus] = useState(false)
+  const [fileName, setFileName] = useState('')
 
   const handleCreateFile = () => {
-    const id = Date.now();
+    const id = Date.now()
     const newFiles = {
       ...files,
       [id]: {
         id,
         name: fileName,
-        content: ""
-      }
-    };
-    setFiles(newFiles);
-    setModalStatus(false);
-    updateUIDL(addRouteToUIDL(fileName, uidl));
-  };
+        slug: slugify(fileName),
+        content: '',
+      },
+    }
+    setFiles(newFiles)
+    setModalStatus(false)
+  }
 
   return (
     <>
       <section className="files_wrapper">
         <img src="./teleport-logo-dark.svg" className="logo" />
-        <button
-          className="secondary_button"
-          onClick={() => setModalStatus(true)}
-        >
+        <button className="secondary_button" onClick={() => setModalStatus(true)}>
           + Add Page
         </button>
         <hr />
@@ -62,7 +51,7 @@ const FileSystem = ({
             <input
               name="File Name"
               value={fileName}
-              onChange={e => setFileName(e.target.value)}
+              onChange={(e) => setFileName(e.target.value)}
               className="filename_wrapper"
               placeholder="Please enter file name"
             />
@@ -80,13 +69,13 @@ const FileSystem = ({
                 key={`${name}-${index}`}
                 onClick={() => setActive(id)}
                 style={{
-                  color: activeFile.id === id ? "#2f3031" : "#fff",
-                  backgroundColor: activeFile.id === id ? "#fff" : "#2f3031"
+                  color: activeFile.id === id ? '#2f3031' : '#fff',
+                  backgroundColor: activeFile.id === id ? '#fff' : '#2f3031',
                 }}
               >
                 {name}
               </div>
-            );
+            )
           })}
       </section>
 
@@ -121,7 +110,7 @@ const FileSystem = ({
         }
       `}</style>
     </>
-  );
-};
+  )
+}
 
-export default FileSystem;
+export default FileSystem

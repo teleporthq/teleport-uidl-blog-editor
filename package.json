@@ -1,12 +1,23 @@
 {
   "name": "teleport-markdown-blog-editor",
   "version": "0.0.0",
-  "main": "index.js",
+  "author": "teleportHQ",
   "license": "MIT",
+  "homepage": "https://teleporthq.io/",
   "scripts": {
     "dev": "next && micro-dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "tslint -c tslint.json"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged && npm run lint"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/teleporthq/teleport-uidl-blog-editor"
   },
   "dependencies": {
     "@babel/preset-env": "^7.8.4",
@@ -18,10 +29,10 @@
     "@teleporthq/teleport-project-generator-react": "^0.10.2",
     "@teleporthq/teleport-project-packer": "^0.10.1",
     "@teleporthq/teleport-publisher-codesandbox": "^0.10.1",
+    "@teleporthq/teleport-types": "^0.10.1",
     "brace": "^0.11.1",
     "firebase": "^7.7.0",
     "firebase-admin": "^8.9.2",
-    "lodash.debounce": "^4.0.8",
     "monaco-editor": "^0.19.3",
     "next": "^9.2.0",
     "prismjs": "^1.19.0",
@@ -29,14 +40,13 @@
     "react-ace": "^8.0.0",
     "react-dom": "^16.12.0",
     "react-modal": "^3.11.1",
-    "remark-html": "^10.0.0",
     "rollup": "^1.31.0"
   },
   "devDependencies": {
-    "@teleporthq/teleport-types": "^0.10.1",
     "@types/node": "^13.1.8",
     "@types/react": "^16.9.17",
     "@types/react-modal": "^3.10.4",
+    "husky": "^4.2.1",
     "prettier": "^1.19.1",
     "tslint": "^6.0.0",
     "tslint-config-prettier": "^1.18.0",

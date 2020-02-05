@@ -2,7 +2,6 @@ import {
   createReactComponentGenerator,
   ReactStyleVariation,
 } from '@teleporthq/teleport-component-generator-react'
-import { markdownUIDLGenerator } from '@teleporthq/teleport-markdown-uidl-generator'
 import { rollup } from 'rollup'
 // @ts-ignore
 import virtual from '@rollup/plugin-virtual'
@@ -12,7 +11,8 @@ import { transform } from '@babel/standalone'
 import babelPresetENV from '@babel/preset-env'
 // @ts-ignore
 import babelPresetReact from '@babel/preset-react'
-import { ComponentUIDL, FileType } from '@teleporthq/teleport-types'
+import { FileType } from '@teleporthq/teleport-types'
+import { generateComponentUIDL } from './uidl-utils'
 
 const INDEX_ENTRY = `import React from "react";
 import ReactDOM from "react-dom";
@@ -37,18 +37,12 @@ export const minify = async (esmComponent: string) => {
 
 const preview = async (markdown: string) => {
   try {
-    const uidlGenerator = markdownUIDLGenerator()
-    const uidlNodes = uidlGenerator.parse(markdown)
-    const componentUIDL: ComponentUIDL = {
-      name: 'markdown-component',
-      node: uidlNodes,
-    }
+    const componentUIDL = generateComponentUIDL(markdown)
     const generator = createReactComponentGenerator(ReactStyleVariation.InlineStyles)
     const componentFiles = await generator.generateComponent(componentUIDL)
     const component = componentFiles.files.filter(
       (file) => file.fileType === FileType.JS
     )[0]
-    console.log(component.content)
     const MINIFIED_INDEX = minify(INDEX_ENTRY)
     const MINIFIED_PREVIEW = minify(component.content)
     const compiler = await rollup({
