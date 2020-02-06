@@ -1,6 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import Modal from 'react-modal'
+import styled, { ThemeContext } from 'styled-components'
+import { Theme } from '../../utils/types'
 import { slugify } from '../../utils/helpers'
+import { SecondaryButton, PrimaryButton } from '../../utils/styles'
 
 const customStyle: ReactModal.Styles = {
   overlay: {
@@ -20,6 +23,7 @@ const customStyle: ReactModal.Styles = {
 }
 
 const FileSystem = ({ files, activeFile, setActive, setFiles }) => {
+  const theme: Theme = useContext(ThemeContext)
   const [isModalOpen, setModalStatus] = useState(false)
   const [fileName, setFileName] = useState('')
 
@@ -40,32 +44,28 @@ const FileSystem = ({ files, activeFile, setActive, setFiles }) => {
 
   return (
     <>
-      <section className="files_wrapper">
-        <img src="./teleport-logo-dark.svg" className="logo" />
-        <button className="secondary_button" onClick={() => setModalStatus(true)}>
-          + Add Page
-        </button>
-        <hr />
+      <FilesWrapper {...theme}>
+        <SecondaryButton {...theme} onClick={() => setModalStatus(true)}>
+          Add Page
+        </SecondaryButton>
         <Modal isOpen={isModalOpen} style={customStyle} ariaHideApp={false}>
           <section>
-            <input
+            <FileNameWrapper
               name="File Name"
               value={fileName}
               onChange={(e) => setFileName(e.target.value)}
-              className="filename_wrapper"
               placeholder="Please enter file name"
             />
-            <button className="primary_button" onClick={handleCreateFile}>
+            <PrimaryButton {...theme} onClick={handleCreateFile}>
               Create
-            </button>
+            </PrimaryButton>
           </section>
         </Modal>
         {files &&
           Object.keys(files).length > 0 &&
           Object.values(files).map(({ name, id }, index) => {
             return (
-              <div
-                className="file_icon"
+              <FileIcon
                 key={`${name}-${index}`}
                 onClick={() => setActive(id)}
                 style={{
@@ -74,43 +74,36 @@ const FileSystem = ({ files, activeFile, setActive, setFiles }) => {
                 }}
               >
                 {name}
-              </div>
+              </FileIcon>
             )
           })}
-      </section>
-
-      <style jsx>{`
-        .filename_wrapper {
-          font-size: 14px;
-          padding: 5px 15px;
-        }
-
-        .file_icon {
-          font-size: 14px;
-          text-align: left;
-          text-transform: capitalize;
-          margin-bottom: 10px;
-          padding: 5px 10px;
-          border-radius: 4px;
-          border: 1px solid #ddd;
-          cursor: pointer;
-        }
-
-        .files_wrapper {
-          color: #fff;
-          background-color: #2f3031;
-          padding: 0px 15px;
-          border-right: 0.1px solid #ddd;
-        }
-
-        .logo {
-          width: 125px;
-          height: auto;
-          margin: 15px 0px;
-        }
-      `}</style>
+      </FilesWrapper>
     </>
   )
 }
 
 export default FileSystem
+
+const FilesWrapper = styled.section(
+  (props: Theme) => `
+  width: 350px;
+  background-color: ${props.primaryBackground};
+  padding: 0px 15px;
+`
+)
+
+const FileNameWrapper = styled.input`
+  font-size: 14px;
+  padding: 5px 15px;
+`
+
+const FileIcon = styled.div`
+  font-size: 14px;
+  text-align: left;
+  text-transform: capitalize;
+  margin-bottom: 10px;
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+`
