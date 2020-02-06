@@ -9,18 +9,20 @@ class MyDocument extends Document {
             href="https://fonts.googleapis.com/css?family=Lato&display=swap"
             rel="stylesheet"
           />
-          <script
-            src="https://unpkg.com/react@16.8.0/umd/react.production.min.js"
-            type="text/javascript"
-          />
-          <script
-            src="https://unpkg.com/react-dom@16.8.0/umd/react-dom.production.min.js"
-            type="text/javascript"
-          />
         </Head>
         <body>
           <Main />
           <NextScript />
+          <script
+            defer
+            src="https://unpkg.com/react@16.8.0/umd/react.production.min.js"
+            type="text/javascript"
+          />
+          <script
+            defer
+            src="https://unpkg.com/react-dom@16.8.0/umd/react-dom.production.min.js"
+            type="text/javascript"
+          />
         </body>
       </Html>
     )

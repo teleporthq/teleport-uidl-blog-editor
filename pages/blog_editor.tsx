@@ -152,6 +152,10 @@ const BlogEditor = () => {
         }
 
         .markdown_renderer {
+          font-family: 'Roboto', sans-serif;
+          color: #2c3e50;
+          -webkit-font-smoothing: antialiased;
+          font-size: 16px;
           padding: 5px;
         }
 
