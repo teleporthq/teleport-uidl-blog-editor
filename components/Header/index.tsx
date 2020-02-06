@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { createProjectPacker } from '@teleporthq/teleport-project-packer'
 import {
   createReactProjectGenerator,
@@ -6,9 +6,11 @@ import {
 } from '@teleporthq/teleport-project-generator-react'
 import { createCodesandboxPublisher } from '@teleporthq/teleport-publisher-codesandbox'
 import { ProjectUIDL } from '@teleporthq/teleport-types'
+import styled, { ThemeContext } from 'styled-components'
 import { exportJson } from '../../utils/helpers'
-import { Files, BlogMeta, File } from '../../utils/types'
+import { Files, BlogMeta, File, Theme } from '../../utils/types'
 import { generateProjectUIDL } from '../../utils/uidl-utils'
+import { SecondaryButton } from '../../utils/styles'
 
 interface HeaderProps {
   files: Files
@@ -17,6 +19,7 @@ interface HeaderProps {
 }
 
 const Header = ({ files, meta, activeFile }: HeaderProps) => {
+  const theme: Theme = useContext(ThemeContext)
   const { name } = activeFile || { name: `` }
   const downloadProjectUIDL = () => {
     const elm = document.getElementById('download_uidl')
@@ -41,33 +44,27 @@ const Header = ({ files, meta, activeFile }: HeaderProps) => {
 
   return (
     <>
-      <section className="header_wrapper">
-        <div className="open_file_name">{name}</div>
-        <a id="download_uidl" className="secondary_button" onClick={downloadProjectUIDL}>
-          Download UIDL
-        </a>
-        <button className="secondary_button" onClick={exportToSandbox}>
+      <HeaderWrapper className="header_wrapper">
+        <FileName className="open_file_name">{name}</FileName>
+        <SecondaryButton {...theme} onClick={exportToSandbox}>
           Sandbox
-        </button>
-      </section>
-      <style jsx>
-        {`
-          .header_wrapper {
-            display: flex;
-            justify-content: space-around;
-            background-color: #2f3031;
-          }
-
-          .open_file_name {
-            color: #fff;
-            padding-top: 15px;
-            padding-left: 25px;
-            height: 35px;
-          }
-        `}
-      </style>
+        </SecondaryButton>
+      </HeaderWrapper>
     </>
   )
 }
 
 export default Header
+
+const HeaderWrapper = styled.section`
+  display: flex;
+  justify-content: space-around;
+  background-color: #2f3031;
+`
+
+const FileName = styled.div`
+  color: #fff;
+  padding-top: 15px;
+  padding-left: 25px;
+  height: 35px;
+`

@@ -1,15 +1,14 @@
-import { ProjectUIDL } from '@teleporthq/teleport-types'
 import React, { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import firebase from 'firebase'
+import styled from 'styled-components'
 
-import Header from '../components/Header'
 import FileSystem from '../components/FileSystem'
 import { File, Files, BlogMeta } from '../utils/types'
-import { generateProjectUIDLTemplate } from '../utils/project'
 import preview from '../utils/bundler'
 import fb from '../firebase'
 
+const Header = dynamic(import('../components/Header'), { ssr: false })
 const CodeEditor = dynamic(import('../components/CodeEditor'), { ssr: false })
 
 const BlogEditor = () => {
@@ -115,17 +114,17 @@ const BlogEditor = () => {
 
   return (
     <>
-      <header style={{ margin: 10 }}>
-        {user ? (
+      {/* <header style={{ margin: 10 }}> */}
+      {/* {user ? (
           <span>
             {fb.app.auth().currentUser.displayName} ({fb.app.auth().currentUser.email}){' '}
             <button onClick={signOut}>Log out</button>
           </span>
         ) : (
           <button onClick={logIn}>Log In</button>
-        )}
-      </header>
-      <section className="grid_wrapper">
+        )} */}
+      {/* </header> */}
+      <GridWrapper>
         <FileSystem
           files={files}
           activeFile={getActiveFile()}
@@ -140,35 +139,34 @@ const BlogEditor = () => {
           />
         </section>
         <section>
-          <div className="markdown_render_heading">Preview</div>
-          <div id="output" className="markdown_renderer"></div>
+          <MarkdownRendererHeading>Preview</MarkdownRendererHeading>
+          <MarkdownRenderer id="output" className="markdown_renderer" />
         </section>
-      </section>
-      <style jsx>{`
-        .grid_wrapper {
-          height: 100%;
-          display: grid;
-          grid-template-columns: 150px 50% 38%;
-        }
-
-        .markdown_renderer {
-          font-family: 'Roboto', sans-serif;
-          color: #2c3e50;
-          -webkit-font-smoothing: antialiased;
-          font-size: 16px;
-          padding: 5px;
-        }
-
-        .markdown_render_heading {
-          margin: 10px;
-          padding-bottom: 5px;
-          text-align: left;
-          font-size: 20px;
-          border-bottom: 1px dotted #000;
-        }
-      `}</style>
+      </GridWrapper>
     </>
   )
 }
 
 export default BlogEditor
+
+const GridWrapper = styled.section`
+  height: 100%;
+  display: grid;
+  grid-template-columns: 250px 50% 38%;
+`
+
+const MarkdownRenderer = styled.div`
+  font-family: 'Roboto', sans-serif;
+  color: #2c3e50;
+  -webkit-font-smoothing: antialiased;
+  font-size: 16px;
+  padding: 5px;
+`
+
+const MarkdownRendererHeading = styled.div`
+  margin: 10px;
+  padding-bottom: 5px;
+  text-align: left;
+  font-size: 20px;
+  border-bottom: 1px dotted #000;
+`

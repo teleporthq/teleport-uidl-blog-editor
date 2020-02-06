@@ -68,7 +68,10 @@ export const generateProjectUIDL = (files: Files, meta: BlogMeta) => {
 
 const generateUIDLNdoes = (markdown: string) => {
   const uidlGenerator = markdownUIDLGenerator()
+  const tree = uidlGenerator.parser().parse(markdown)
+  console.log(tree)
   const uidlNodes = uidlGenerator.parse(markdown)
+  console.log(uidlNodes)
   return uidlNodes
 }
 
